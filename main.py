@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 
+# Core
 import argparse
 import json
 import logging
 import math
 import os
-import requests
 import sys
+from datetime import datetime
 
+# Third-party
+import requests
 from dotenv import load_dotenv
 from libdyson.dyson_pure_cool import DysonPureCool
 from libdyson.exceptions import (
@@ -17,16 +20,21 @@ from libdyson.exceptions import (
     DysonNotConnected,
 )
 
+LOG_FILE   = 'dyson.log'
+STATE_FILE = 'state.json'
+
+# Configure logging to STDOUT and a log file
+script_path = os.path.dirname(os.path.abspath(__file__))
+log_path    = os.path.join(script_path, LOG_FILE)
 logging.basicConfig(
     level=logging.INFO,
     handlers=[
-        logging.FileHandler('dyson.log'),
+        logging.FileHandler(log_path),
         logging.StreamHandler()
     ]
 )
 logger = logging.getLogger(__name__)
 
-STATE_FILE = 'state.json'
 
 def save_state(state):
     with open(STATE_FILE, 'w') as file_handle:
@@ -67,6 +75,10 @@ def send_pushover_alert(title, message):
 
 def main():
 
+    now = datetime.now()
+    time_string = now.strftime("%Y-%m-%d %H:%M:%S")
+    logger.info(f"Initialising at {time_string}")
+
     # Load environment variables from '.env'
     load_dotenv()
 
@@ -82,6 +94,8 @@ def main():
     if args.max_humidity is None:
         logger.error("You must provide at least one alerting threshold!")
         sys.exit(1)
+    else:
+        logger.info(f"Relative humidity threshold at: {args.max_humidity}%")
 
     # Check we have the required credentials and connection info
     if not os.environ.get('DYSON_SERIAL') or \

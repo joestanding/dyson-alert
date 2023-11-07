@@ -1,6 +1,7 @@
 # State file and logs
 state.json
 dyson.log
+cron.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
