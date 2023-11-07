@@ -122,7 +122,8 @@ def main():
     # Load previous state
     state = load_state()
     last_humidity = state.get('last_humidity')
-    logger.info(f"Previous humidity reading was: {last_humidity}%")
+    if last_humidity is not None:
+        logger.info(f"Previous humidity reading was: {last_humidity}%")
 
     # Check the device values against our alert criteria
     if args.max_humidity is not None:
@@ -133,7 +134,8 @@ def main():
                     f"Humidity is: {device.humidity}%")
 
         # Prev. reading was above threshold but has returned to OK
-        if device.humidity < args.max_humidity and \
+        if last_humidity is not None and \
+           device.humidity < args.max_humidity and \
            last_humidity > args.max_humidity:
             send_pushover_alert("Rel. humidity OK",
                 f"Humidity returned to OK value ({device.humidity}%)")
