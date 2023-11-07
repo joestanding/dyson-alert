@@ -17,7 +17,13 @@ from libdyson.exceptions import (
     DysonNotConnected,
 )
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    handlers=[
+        logging.FileHandler('dyson.log'),
+        logging.StreamHandler()
+    ]
+)
 logger = logging.getLogger(__name__)
 
 STATE_FILE = 'state.json'
