@@ -147,16 +147,15 @@ def main():
 
     # Check the device values against our alert criteria
     if args.max_humidity is not None:
-        if device.humidity >= args.max_humidity:
-            # No prev. reading or prev. reading was safe but now isn't
-            if last_humidity is None or last_humidity <= args.max_humidity:
+        if device.humidity >= args.max_humidity and \
+           (last_humidity is None or last_humidity < args.max_humidity):
                 send_pushover_alert("Rel. humidity above threshold",
                     f"Humidity is: {device.humidity}%")
 
         # Prev. reading was above threshold but has returned to OK
         if last_humidity is not None and \
-           device.humidity < args.max_humidity and \
-           last_humidity > args.max_humidity:
+           last_humidity >= args.max_humidity and \
+           device.humidity < args.max_humidity:
             send_pushover_alert("Rel. humidity OK",
                 f"Humidity returned to OK value ({device.humidity}%)")
 
